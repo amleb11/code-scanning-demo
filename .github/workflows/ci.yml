@@ -14,17 +14,26 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: '20'
-          cache: 'npm'
+          bun-version: 1.4.4
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Build project
-        run: npm run build --if-present
+        run: |
+          if bun -e 'const p = await Bun.file("package.json").json(); process.exit(p.scripts && p.scripts.build ? 0 : 1)'; then
+            bun run build
+          else
+            echo "No build script; skipping"
+          fi
 
       - name: Run tests
-        run: npm test --if-present
+        run: |
+          if bun -e 'const p = await Bun.file("package.json").json(); process.exit(p.scripts && p.scripts.test ? 0 : 1)'; then
+            bun run test
+          else
+            echo "No test script; skipping"
+          fi
