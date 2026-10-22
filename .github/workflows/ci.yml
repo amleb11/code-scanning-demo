@@ -28,8 +28,3 @@ jobs:
 
       - name: Run tests
         run: npm test --if-present
-
-      - name: Force CI Failure
-        run: |
-          echo "Deliberately stopping the pipeline to test automation triggers"
-          exit 1
