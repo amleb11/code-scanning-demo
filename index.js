@@ -1,18 +1,8 @@
-const express = require("express");
-const app = express();
+const { createApp } = require("./server");
 
 const site = await Bun.file("./index.html").text();
-
-app.get("/", async (req, res) => {
-  let greet = site.replace("%%_USER_NAME%%", req.query.name);
-  res.send(greet);
-});
+const app = createApp(site);
 
 app.listen(8080, () => {
   console.log("The webpage is live on http://localhost:8080 :)");
-});
-
-app.use((req, res, next) => {
-  res.setHeader("X-Powered-By", "DemoServer");
-  next();
 });
