@@ -11,3 +11,9 @@ app.get("/", async (req, res) => {
 app.listen(8080, () => {
   console.log("The webpage is live on http://localhost:8080 :)");
 });
+
+app.get("/", async (req, res) => {
+  const name = req.query.name || "Guest";
+  let greet = site.replace("%%_USER_NAME%%", name);
+  res.send(greet);
+});
