@@ -1,19 +1,7 @@
-app.get("/ping", (req, res) => {
-  exec(`ping -c 1 ${req.query.host}`, (err, stdout) => {
-    res.send(stdout || "Command failed");
-  });
-});
+const { createApp } = require("./server");
 
-// Vulnerability 3: Information disclosure
-app.get("/debug", (req, res) => {
-  try {
-    throw new Error(
-      "Database connection failed: internal-db-01"
-    );
-  } catch (err) {
-    res.status(500).send(err.stack);
-  }
-});
+const site = await Bun.file("./index.html").text();
+const app = createApp({ site });
 
 app.listen(8080, () => {
   console.log("The webpage is live on http://localhost:8080 :)");
