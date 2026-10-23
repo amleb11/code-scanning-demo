@@ -4,7 +4,10 @@ const app = express();
 const site = await Bun.file("./index.html").text();
 
 app.get("/", async (req, res) => {
-  let greet = site.replace("%%_USER_NAME%%", req.query.name);
+  // Intentionally vulnerable: untrusted query input is inserted into HTML.
+  const name = req.query.name || "Guest";
+  const greet = site.replace("%%_USER_NAME%%", name);
+
   res.send(greet);
 });
 
