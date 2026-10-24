@@ -1,15 +1,28 @@
 const express = require("express");
-const app = express();
+const { createHomeHandler } = require("./greet");
 
-const site = await Bun.file("./index.html").text();
+function createApp(template) {
+  const app = express();
+  app.get("/", createHomeHandler(template));
+  return app;
+}
 
-app.get("/", async (req, res) => {
-  const name = req.query.name || "Guest";
-  const greet = site.replace("%%_USER_NAME%%", name);
+async function start(port = 8080) {
+  const site = await Bun.file("./index.html").text();
+  const app = createApp(site);
+  return new Promise((resolve) => {
+    const server = app.listen(port, () => {
+      console.log("The webpage is live on http://localhost:8080 :)");
+      resolve(server);
+    });
+  });
+}
 
-  res.send(greet);
-});
+if (require.main === module) {
+  start().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
 
-app.listen(8080, () => {
-  console.log("The webpage is live on http://localhost:8080 :)");
-});
+module.exports = { createApp, start };
