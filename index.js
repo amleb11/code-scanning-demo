@@ -1,8 +1,7 @@
 
 const express = require("express");
 const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { createReadFileHandler } = require("./readFile");
 
 const app = express();
 app.use(express.json());
@@ -28,18 +27,7 @@ app.get("/ping", (req, res) => {
   });
 });
 
-// Vulnerability 3: Path traversal
-app.get("/read-file", (req, res) => {
-  const filename = req.query.filename || "index.html";
-  const filePath = path.join(__dirname, filename);
-
-  fs.readFile(filePath, "utf8", (error, data) => {
-    if (error) {
-      return res.status(404).send("File not found");
-    }
-    res.type("text/plain").send(data);
-  });
-});
+app.get("/read-file", createReadFileHandler(__dirname));
 
 // Vulnerability 4: Excessive error detail disclosure
 app.get("/debug", (req, res) => {
