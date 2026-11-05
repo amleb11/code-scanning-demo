@@ -2,18 +2,14 @@ const express = require("express");
 const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const { createHomeHandler } = require("./greet");
 
 const app = express();
 app.use(express.json());
 
 const site = await Bun.file("./index.html").text();
 
-// Vulnerability 1: Reflected XSS
-app.get("/", async (req, res) => {
-  const name = req.query.name || "Guest";
-  const greet = site.replace("%%_USER_NAME%%", name);
-  res.send(greet);
-});
+app.get("/", createHomeHandler(site));
 
 // Vulnerability 2: Command injection
 app.get("/ping", (req, res) => {
